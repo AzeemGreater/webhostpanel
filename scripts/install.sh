@@ -106,8 +106,8 @@ systemctl restart webhostpanel-backend
 
 # 9. Start and Enable System Services
 echo "Starting dependent services..."
-systemctl enable mariadb redis-server pure-ftpd bind9 postfix dovecot
-systemctl restart mariadb redis-server pure-ftpd bind9 postfix dovecot
+systemctl enable mariadb redis-server pure-ftpd named postfix dovecot
+systemctl restart mariadb redis-server pure-ftpd named postfix dovecot
 
 # 10. Install WP-CLI globally
 echo "Installing WP-CLI..."
