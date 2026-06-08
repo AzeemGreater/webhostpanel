@@ -11,6 +11,10 @@ echo "Starting WebHostPanel Installation..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get update && apt-get upgrade -y
 
+# Pre-seed Postfix configuration to prevent interactive prompt during installation
+echo "postfix postfix/mailname string localhost" | debconf-set-selections
+echo "postfix postfix/main_mailer_type select 'Internet Site'" | debconf-set-selections
+
 # 2. Install Daemons and System Dependencies
 echo "Installing core dependencies..."
 apt-get install -y nginx mariadb-server php-fpm php-mysql python3-pip python3-venv curl git unzip ufw bind9 postfix dovecot-imapd dovecot-pop3d redis-server pure-ftpd
