@@ -16,6 +16,12 @@ apt-get update && apt-get upgrade -y
 echo "postfix postfix/mailname string localhost" | debconf-set-selections
 echo "postfix postfix/main_mailer_type select 'Internet Site'" | debconf-set-selections
 
+# Clean up any conflicting systemd symlinks for bind9/named
+systemctl unmask bind9 || true
+systemctl unmask named || true
+rm -f /etc/systemd/system/bind9.service
+rm -f /etc/systemd/system/multi-user.target.wants/bind9.service
+
 # 2. Install Daemons and System Dependencies
 echo "Installing core dependencies..."
 apt-get install -y nginx mariadb-server php-fpm php-mysql python3-pip python3-venv curl git unzip ufw bind9 postfix dovecot-imapd dovecot-pop3d redis-server pure-ftpd
