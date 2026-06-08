@@ -49,9 +49,10 @@ Once installed, the terminal prints your access details:
 ==================================================
  WebHostPanel Installation Successful!
 ==================================================
- Panel Access URL: http://<your-vps-ip>:8080
- Username:         admin
- Password:         z9T3eQ4 (Generated)
+ Panel Access URL:  http://<your-vps-ip>:8080
+ Username:          admin
+ Panel Password:    z9T3eQ4 (Generated)
+ MariaDB root Pass: z9T3eQ4 (Same password)
 ==================================================
 ```
 
