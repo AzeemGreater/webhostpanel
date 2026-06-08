@@ -24,7 +24,7 @@ export default function Databases() {
   const fetchDatabases = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/databases');
+      const res = await fetch('/api/databases');
       if (res.ok) {
         const data = await res.json();
         setDatabases(data);
@@ -55,7 +55,7 @@ export default function Databases() {
     setErrorMsg(null);
 
     try {
-      const res = await fetch('http://localhost:8000/api/databases/', {
+      const res = await fetch('/api/databases/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: dbName, db_user: dbUser, db_pass: dbPass })
@@ -92,7 +92,7 @@ export default function Databases() {
   const handleDeleteDb = async (id: number) => {
     if (!confirm('Are you sure you want to permanently drop this database? This will destroy all tables and database content!')) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/databases/${id}`, {
+      const res = await fetch(`/api/databases/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {

@@ -31,8 +31,8 @@ export default function Emails() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const emailRes = await fetch('http://localhost:8000/api/emails');
-      const webRes = await fetch('http://localhost:8000/api/websites');
+      const emailRes = await fetch('/api/emails');
+      const webRes = await fetch('/api/websites');
       
       if (emailRes.ok && webRes.ok) {
         const emailData = await emailRes.json();
@@ -76,7 +76,7 @@ export default function Emails() {
     const fullEmail = `${mailboxName.trim()}@${selectedDomain}`;
 
     try {
-      const res = await fetch('http://localhost:8000/api/emails/', {
+      const res = await fetch('/api/emails/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: fullEmail, password: emailPass, quota_mb: quota })
@@ -111,7 +111,7 @@ export default function Emails() {
   const handleDeleteEmail = async (id: number) => {
     if (!confirm('Are you sure you want to delete this email account? This will permanently delete all messages stored in the mailbox!')) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/emails/${id}`, {
+      const res = await fetch(`/api/emails/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {

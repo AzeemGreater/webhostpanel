@@ -30,8 +30,8 @@ export default function Ftp() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const ftpRes = await fetch('http://localhost:8000/api/ftp');
-      const webRes = await fetch('http://localhost:8000/api/websites');
+      const ftpRes = await fetch('/api/ftp');
+      const webRes = await fetch('/api/websites');
       
       if (ftpRes.ok && webRes.ok) {
         setFtpAccounts(await ftpRes.json());
@@ -74,7 +74,7 @@ export default function Ftp() {
     const fullPath = `/home/${selectedDomain}/public_html`;
 
     try {
-      const res = await fetch('http://localhost:8000/api/ftp/', {
+      const res = await fetch('/api/ftp/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: ftpUser.trim(), password: ftpPass, doc_root: fullPath })
@@ -109,7 +109,7 @@ export default function Ftp() {
   const handleDeleteFtp = async (id: number) => {
     if (!confirm('Are you sure you want to delete this FTP account?')) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/ftp/${id}`, {
+      const res = await fetch(`/api/ftp/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {

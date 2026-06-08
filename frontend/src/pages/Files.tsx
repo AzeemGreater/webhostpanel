@@ -33,7 +33,7 @@ export default function Files() {
   const fetchDirectory = async (path: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/files/list?path=${encodeURIComponent(path)}`);
+      const res = await fetch(`/api/files/list?path=${encodeURIComponent(path)}`);
       if (res.ok) {
         const data = await res.json();
         setFiles(data.items);
@@ -74,7 +74,7 @@ export default function Files() {
   // Open File in Editor
   const handleOpenFile = async (file: FileItem) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/files/read?path=${encodeURIComponent(file.path)}`);
+      const res = await fetch(`/api/files/read?path=${encodeURIComponent(file.path)}`);
       if (res.ok) {
         const data = await res.json();
         setEditingFile(file);
@@ -94,7 +94,7 @@ export default function Files() {
     if (!editingFile) return;
     setSaving(true);
     try {
-      const res = await fetch('http://localhost:8000/api/files/write', {
+      const res = await fetch('/api/files/write', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: editingFile.path, content: editorContent })
@@ -119,7 +119,7 @@ export default function Files() {
     const path = currentPath ? `${currentPath}/${createName}` : createName;
 
     try {
-      const res = await fetch('http://localhost:8000/api/files/create', {
+      const res = await fetch('/api/files/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path, is_dir: createType === 'dir' })
@@ -148,7 +148,7 @@ export default function Files() {
   const handleDeleteItem = async (file: FileItem) => {
     if (!confirm(`Are you sure you want to delete ${file.name}?`)) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/files/delete?path=${encodeURIComponent(file.path)}`, {
+      const res = await fetch(`/api/files/delete?path=${encodeURIComponent(file.path)}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -170,7 +170,7 @@ export default function Files() {
     formData.append('file', fileList[0]);
 
     try {
-      const res = await fetch('http://localhost:8000/api/files/upload', {
+      const res = await fetch('/api/files/upload', {
         method: 'POST',
         body: formData
       });

@@ -3,6 +3,7 @@ import { Server as ServerIcon, Terminal as TerminalIcon, RotateCw, Play, Square,
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
+import { getWsUrl } from '../lib/api';
 
 // Types
 interface ServiceStatus {
@@ -35,7 +36,7 @@ export default function Server() {
     try {
       // Set loading state first
       setServices(prev => prev.map(s => ({ ...s, status: 'loading' })));
-      const res = await fetch('http://localhost:8000/api/servers/services');
+      const res = await fetch('/api/servers/services');
       if (res.ok) {
         const data = await res.json();
         setServices(prev =>
@@ -65,7 +66,7 @@ export default function Server() {
     );
 
     try {
-      const res = await fetch(`http://localhost:8000/api/servers/services/${serviceName}/${action}`, {
+      const res = await fetch(`/api/servers/services/${serviceName}/${action}`, {
         method: 'POST',
       });
       if (res.ok) {
@@ -91,9 +92,9 @@ export default function Server() {
     setOperationMessage(null);
 
     let url = '';
-    if (type === 'reboot') url = 'http://localhost:8000/api/servers/reboot';
-    else if (type === 'shutdown') url = 'http://localhost:8000/api/servers/shutdown';
-    else if (type === 'cache') url = 'http://localhost:8000/api/servers/cache/clear';
+    if (type === 'reboot') url = '/api/servers/reboot';
+    else if (type === 'shutdown') url = '/api/servers/shutdown';
+    else if (type === 'cache') url = '/api/servers/cache/clear';
 
     try {
       const res = await fetch(url, { method: 'POST' });
@@ -159,8 +160,7 @@ export default function Server() {
     term.writeln('\x1b[1;34mConnecting to server console...\x1b[0m');
 
     // Setup WebSocket
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const ws = new WebSocket(`${wsProtocol}//localhost:8000/api/servers/ws/terminal`);
+    const ws = new WebSocket(getWsUrl('/api/servers/ws/terminal'));
 
     ws.onopen = () => {
       term.writeln('\x1b[1;32mSession established successfully!\x1b[0m\r\n');

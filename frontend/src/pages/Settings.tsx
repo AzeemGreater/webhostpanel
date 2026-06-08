@@ -52,9 +52,9 @@ export default function Settings() {
 
   const loadData = async () => {
     try {
-      const siteRes = await fetch('http://localhost:8000/api/websites');
-      const zoneRes = await fetch('http://localhost:8000/api/dns/zones');
-      const backupRes = await fetch('http://localhost:8000/api/backups');
+      const siteRes = await fetch('/api/websites');
+      const zoneRes = await fetch('/api/dns/zones');
+      const backupRes = await fetch('/api/backups');
 
       if (siteRes.ok) {
         const siteData = await siteRes.json();
@@ -88,7 +88,7 @@ export default function Settings() {
   const fetchRecords = async (zone: DnsZone) => {
     setSelectedZone(zone);
     try {
-      const res = await fetch(`http://localhost:8000/api/dns/zones/${zone.id}/records`);
+      const res = await fetch(`/api/dns/zones/${zone.id}/records`);
       if (res.ok) {
         setRecords(await res.json());
       }
@@ -105,7 +105,7 @@ export default function Settings() {
     e.preventDefault();
     if (!newZoneDomain) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/dns/zones?domain=${newZoneDomain}`, {
+      const res = await fetch(`/api/dns/zones?domain=${newZoneDomain}`, {
         method: 'POST'
       });
       if (res.ok) {
@@ -135,7 +135,7 @@ export default function Settings() {
     };
 
     try {
-      const res = await fetch(`http://localhost:8000/api/dns/zones/${selectedZone.id}/records`, {
+      const res = await fetch(`/api/dns/zones/${selectedZone.id}/records`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -156,7 +156,7 @@ export default function Settings() {
   // Delete DNS Record
   const handleDeleteRecord = async (id: number) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/dns/records/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/dns/records/${id}`, { method: 'DELETE' });
       if (res.ok && selectedZone) {
         fetchRecords(selectedZone);
       }
@@ -170,7 +170,7 @@ export default function Settings() {
     if (!backupSiteId) return;
     setBackupLoading(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/backups/create/${backupSiteId}`, { method: 'POST' });
+      const res = await fetch(`/api/backups/create/${backupSiteId}`, { method: 'POST' });
       if (res.ok) {
         loadData();
       }
@@ -191,7 +191,7 @@ export default function Settings() {
   const handleRestoreBackup = async (file: BackupFile) => {
     if (!confirm(`Restore system state from snapshot: ${file.filename}? This will overwrite existing folder contents.`)) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/backups/restore?filename=${file.filename}&domain=emulated`, {
+      const res = await fetch(`/api/backups/restore?filename=${file.filename}&domain=emulated`, {
         method: 'POST'
       });
       const data = await res.json();

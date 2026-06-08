@@ -1,38 +1,70 @@
 #!/bin/bash
 # WebHostPanel One-Line Installer
-# Target OS: Ubuntu 22.04/24.04
+# Target OS: Ubuntu 22.04/24.04 LTS
+# Designed to be run directly via: curl -sSL https://raw.githubusercontent.com/AzeemGreater/webhostpanel/main/scripts/install.sh | bash
 
 set -e
 
 echo "Starting WebHostPanel Installation..."
 
-# 1. Update System
+# 1. Update System Packages
+export DEBIAN_FRONTEND=noninteractive
 apt-get update && apt-get upgrade -y
 
-# 2. Install Dependencies
+# 2. Install Daemons and System Dependencies
+echo "Installing core dependencies..."
 apt-get install -y nginx mariadb-server php-fpm php-mysql python3-pip python3-venv curl git unzip ufw bind9 postfix dovecot-imapd dovecot-pop3d redis-server pure-ftpd
 
-# 3. Secure MariaDB
-# mysql_secure_installation logic here
+# 3. Install Node.js (v20 LTS) & npm for building frontend
+echo "Installing Node.js & npm..."
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt-get install -y nodejs
 
-# 4. Setup Python Environment for Panel
+# 4. Clone or Copy Codebase to /usr/local/webhostpanel
+echo "Setting up Panel codebase..."
 mkdir -p /usr/local/webhostpanel
-cp -r ./* /usr/local/webhostpanel/ 2>/dev/null || true
+if [ ! -d "backend" ] || [ ! -d "frontend" ]; then
+    echo "Cloning codebase from GitHub..."
+    rm -rf /tmp/webhostpanel_repo
+    git clone https://github.com/AzeemGreater/webhostpanel.git /tmp/webhostpanel_repo
+    cp -r /tmp/webhostpanel_repo/* /usr/local/webhostpanel/
+    rm -rf /tmp/webhostpanel_repo
+else
+    echo "Copying codebase from local directory..."
+    cp -r ./* /usr/local/webhostpanel/ 2>/dev/null || true
+fi
+
+# 5. Build Frontend React Application
+echo "Installing frontend dependencies & building frontend..."
+cd /usr/local/webhostpanel/frontend
+npm install
+npm run build
+
+# 6. Setup Python Virtual Environment and Backend Dependencies
+echo "Setting up Python virtual environment..."
 cd /usr/local/webhostpanel
 python3 -m venv venv
-source venv/bin/activate
-pip install fastapi uvicorn sqlalchemy psycopg2-binary redis celery pydantic-settings pydantic[email] python-jose[cryptography] passlib[bcrypt] python-multipart jinja2 aiofiles psutil websockets
+./venv/bin/pip install --upgrade pip
+./venv/bin/pip install -r backend/requirements.txt
 
-
-
-# 5. Setup Nginx for Panel
+# 7. Configure Nginx Server Block (port 8080 with WebSocket support)
+echo "Configuring Nginx reverse proxy..."
 cat > /etc/nginx/sites-available/webhostpanel <<EOF
 server {
     listen 8080;
     server_name _;
+
     location /api {
-        proxy_pass http://localhost:8000;
+        proxy_pass http://127.0.0.1:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
+
     location / {
         root /usr/local/webhostpanel/frontend/dist;
         index index.html;
@@ -40,17 +72,49 @@ server {
     }
 }
 EOF
-ln -s /etc/nginx/sites-available/webhostpanel /etc/nginx/sites-enabled/
-rm -f /etc/nginx/sites-enabled/default
 
-# 6. Install WP-CLI
+ln -sf /etc/nginx/sites-available/webhostpanel /etc/nginx/sites-enabled/
+rm -f /etc/nginx/sites-enabled/default
+systemctl restart nginx
+
+# 8. Create Backend Systemd Service
+echo "Creating systemd service for backend daemon..."
+cat > /etc/systemd/system/webhostpanel-backend.service <<EOF
+[Unit]
+Description=WebHostPanel Backend Service
+After=network.target mariadb.service redis-server.service
+
+[Service]
+User=root
+WorkingDirectory=/usr/local/webhostpanel/backend
+ExecStart=/usr/local/webhostpanel/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+Restart=always
+Environment=PYTHONPATH=/usr/local/webhostpanel/backend
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable webhostpanel-backend
+systemctl restart webhostpanel-backend
+
+# 9. Start and Enable System Services
+echo "Starting dependent services..."
+systemctl enable mariadb redis-server pure-ftpd bind9 postfix dovecot
+systemctl restart mariadb redis-server pure-ftpd bind9 postfix dovecot
+
+# 10. Install WP-CLI globally
+echo "Installing WP-CLI..."
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 chmod +x wp-cli.phar
 mv wp-cli.phar /usr/local/bin/wp
 
-# 7. Initialize Admin Credentials and Retrieve IP
+# 11. Initialize Admin Credentials and Retrieve IP
+echo "Initializing admin credentials..."
 IP_ADDR=$(curl -s https://ifconfig.me || curl -s https://api.ipify.org || echo "your-server-ip")
-ADMIN_OUT=$(/usr/local/webhostpanel/venv/bin/python3 /usr/local/webhostpanel/scripts/init_admin.py 2>/dev/null || echo "ERROR")
+cd /usr/local/webhostpanel/backend
+ADMIN_OUT=$(/usr/local/webhostpanel/venv/bin/python3 ../scripts/init_admin.py 2>/dev/null || echo "ERROR")
 
 if [[ "$ADMIN_OUT" =~ SUCCESS\|(.*)\|(.*) ]]; then
     ADMIN_USER="${BASH_REMATCH[1]}"
@@ -72,4 +136,3 @@ echo " Username:         $ADMIN_USER"
 echo " Password:         $ADMIN_PASS"
 echo "=================================================="
 echo ""
-

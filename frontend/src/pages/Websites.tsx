@@ -39,7 +39,7 @@ export default function Websites() {
     setLoading(true);
     setErrorMessage(null);
     try {
-      const res = await fetch('http://localhost:8000/api/websites');
+      const res = await fetch('/api/websites');
       if (res.ok) {
         const data = await res.json();
         setWebsites(data);
@@ -90,7 +90,7 @@ export default function Websites() {
     setErrorMessage(null);
 
     try {
-      const res = await fetch('http://localhost:8000/api/websites/', {
+      const res = await fetch('/api/websites/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain: newDomain, php_version: newPhp }),
@@ -128,7 +128,7 @@ export default function Websites() {
   const handleDeleteWebsite = async (id: number) => {
     if (!confirm('Are you sure you want to delete this website? All files, configurations, and document roots will be permanently removed.')) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/websites/${id}`, {
+      const res = await fetch(`/api/websites/${id}`, {
         method: 'DELETE',
       });
       if (res.ok) {
@@ -145,7 +145,7 @@ export default function Websites() {
   // Toggle SSL
   const handleToggleSSL = async (id: number) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/websites/${id}/ssl`, {
+      const res = await fetch(`/api/websites/${id}/ssl`, {
         method: 'POST',
       });
       if (res.ok) {
@@ -159,7 +159,7 @@ export default function Websites() {
   // Change PHP Version
   const handleChangePHP = async (id: number, phpVer: string) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/websites/${id}/php?php_version=${phpVer}`, {
+      const res = await fetch(`/api/websites/${id}/php?php_version=${phpVer}`, {
         method: 'POST',
       });
       if (res.ok) {
@@ -178,7 +178,7 @@ export default function Websites() {
     setWpMessage(null);
 
     try {
-      const res = await fetch('http://localhost:8000/api/wordpress/install', {
+      const res = await fetch('/api/wordpress/install', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -507,7 +507,7 @@ export default function Websites() {
                     type="button"
                     onClick={async () => {
                       try {
-                        const res = await fetch(`http://localhost:8000/api/wordpress/harden/${selectedSite.id}`, { method: 'POST' });
+                        const res = await fetch(`/api/wordpress/harden/${selectedSite.id}`, { method: 'POST' });
                         if (res.ok) alert('Hardening successfully applied!');
                       } catch {
                         alert('Harden script completed (mock)');
@@ -522,7 +522,7 @@ export default function Websites() {
                     type="button"
                     onClick={async () => {
                       try {
-                        const res = await fetch(`http://localhost:8000/api/wordpress/optimize/${selectedSite.id}`, { method: 'POST' });
+                        const res = await fetch(`/api/wordpress/optimize/${selectedSite.id}`, { method: 'POST' });
                         if (res.ok) alert('Database optimized successfully!');
                       } catch {
                         alert('Optimize script completed (mock)');

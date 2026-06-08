@@ -35,8 +35,8 @@ export default function Security() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const siteRes = await fetch('http://localhost:8000/api/websites');
-      const fwRes = await fetch('http://localhost:8000/api/security/firewall');
+      const siteRes = await fetch('/api/websites');
+      const fwRes = await fetch('/api/security/firewall');
       
       if (siteRes.ok && fwRes.ok) {
         const siteData = await siteRes.json();
@@ -82,7 +82,7 @@ export default function Security() {
     setSslMessage(null);
 
     try {
-      const res = await fetch('http://localhost:8000/api/security/ssl/install', {
+      const res = await fetch('/api/security/ssl/install', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain: sslDomain, email: sslEmail })
@@ -108,7 +108,7 @@ export default function Security() {
     setRuleSubmitting(true);
 
     try {
-      const res = await fetch('http://localhost:8000/api/security/firewall', {
+      const res = await fetch('/api/security/firewall', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ port: portNum, protocol: ruleProto, action: ruleAction })

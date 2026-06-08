@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity, HardDrive, Cpu, MemoryStick, Server as ServerIcon, Globe, Database, Mail } from 'lucide-react';
+import { getWsUrl } from '../lib/api';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -13,13 +14,13 @@ const Dashboard = () => {
 
   useEffect(() => {
     // Fetch system summary
-    fetch('http://localhost:8000/api/system/summary')
+    fetch('/api/system/summary')
       .then(res => res.json())
       .then(data => setSummary(data))
       .catch(err => setSummary({ websites: 2, databases: 2, emails: 2 }));
 
     // Connect to WebSocket
-    ws.current = new WebSocket('ws://localhost:8000/api/system/ws/stats');
+    ws.current = new WebSocket(getWsUrl('/api/system/ws/stats'));
     
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
