@@ -9,6 +9,7 @@ echo "Starting WebHostPanel Installation..."
 
 # 1. Update System Packages
 export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=l
 apt-get update && apt-get upgrade -y
 
 # Pre-seed Postfix configuration to prevent interactive prompt during installation
