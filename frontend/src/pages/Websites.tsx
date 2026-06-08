@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Globe, Plus, Trash2, Shield, ShieldAlert, Cpu, Settings, Wrench, Package, ArrowRight, Check, X, RefreshCw } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Globe, Plus, Trash2, Shield, ShieldAlert, Cpu, Settings, Wrench, Package, ArrowRight, X } from 'lucide-react';
 
 interface Website {
   id: number;

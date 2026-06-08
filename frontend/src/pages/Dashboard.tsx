@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Activity, HardDrive, Cpu, MemoryStick, Server as ServerIcon, Globe, Database, Mail } from 'lucide-react';
+import { Activity, HardDrive, Cpu, MemoryStick, Globe, Database, Mail } from 'lucide-react';
 import { getWsUrl } from '../lib/api';
 
 const Dashboard = () => {
@@ -17,7 +17,7 @@ const Dashboard = () => {
     fetch('/api/system/summary')
       .then(res => res.json())
       .then(data => setSummary(data))
-      .catch(err => setSummary({ websites: 2, databases: 2, emails: 2 }));
+      .catch(() => setSummary({ websites: 2, databases: 2, emails: 2 }));
 
     // Connect to WebSocket
     ws.current = new WebSocket(getWsUrl('/api/system/ws/stats'));

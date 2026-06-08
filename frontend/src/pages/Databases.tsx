@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Database as DbIcon, Plus, Trash2, Key, User, ShieldAlert, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Database as DbIcon, Plus, Trash2, Key, User, X } from 'lucide-react';
 
 interface Database {
   id: number;

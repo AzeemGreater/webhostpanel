@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Key, Globe, FolderOpen, X, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Trash2, Globe, FolderOpen, X, User } from 'lucide-react';
 
 interface FtpAccount {
   id: number;

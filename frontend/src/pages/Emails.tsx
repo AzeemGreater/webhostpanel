@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Mail, Plus, Trash2, Key, Globe, Shield, X, HardDrive } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Mail, Plus, Trash2, Globe, X, HardDrive } from 'lucide-react';
 
 interface EmailAccount {
   id: number;

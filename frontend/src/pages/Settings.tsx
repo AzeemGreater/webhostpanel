@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Globe, Database, Save, HardDrive, Plus, Trash2, ArrowDownCircle, ArrowUpCircle, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Settings as SettingsIcon, Globe, Database, Save, HardDrive, Plus, Trash2, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
 
 interface DnsZone {
   id: number;
@@ -43,7 +43,7 @@ export default function Settings() {
   const [recName, setRecName] = useState('@');
   const [recContent, setRecContent] = useState('');
   const [recPriority, setRecPriority] = useState('');
-  const [recTtl, setRecTtl] = useState(3600);
+  const [recTtl] = useState(3600);
 
   // Backups State
   const [backups, setBackups] = useState<BackupFile[]>([]);

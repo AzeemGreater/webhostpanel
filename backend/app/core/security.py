@@ -1,3 +1,14 @@
+# Workaround for passlib + bcrypt 4.0.0+ / 5.0.0+ incompatibility
+import bcrypt
+orig_hashpw = bcrypt.hashpw
+def patched_hashpw(password, salt):
+    if isinstance(password, bytes) and len(password) > 72:
+        password = password[:72]
+    elif isinstance(password, str) and len(password) > 72:
+        password = password[:72]
+    return orig_hashpw(password, salt)
+bcrypt.hashpw = patched_hashpw
+
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt

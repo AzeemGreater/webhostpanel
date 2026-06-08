@@ -7,11 +7,17 @@ from app.core.database import Base, get_db
 from app.models import models
 
 # Set up an in-memory SQLite database for testing
+from sqlalchemy.pool import StaticPool
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool
+)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Re-create tables
+from app.models.models import User, Website, Database, EmailAccount, DnsZone, DnsRecord, ActivityLog, FtpAccount
 Base.metadata.create_all(bind=engine)
 
 # Dependency override

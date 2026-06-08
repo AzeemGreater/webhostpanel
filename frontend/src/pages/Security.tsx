@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Shield, Plus, Trash2, Key, Globe, Lock, AlertCircle, Cpu, Wifi, WifiOff, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Shield, Plus, Trash2, Lock, X } from 'lucide-react';
 
 interface FirewallRule {
   port: number;
@@ -15,8 +15,7 @@ interface Website {
 export default function Security() {
   const [websites, setWebsites] = useState<Website[]>([]);
   const [rules, setRules] = useState<FirewallRule[]>([]);
-  const [firewallActive, setFirewallActive] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const firewallActive = true;
 
   // SSL State
   const [sslDomain, setSslDomain] = useState('');
@@ -33,19 +32,18 @@ export default function Security() {
 
   // Fetch Security Data
   const fetchData = async () => {
-    setLoading(true);
     try {
       const siteRes = await fetch('/api/websites');
       const fwRes = await fetch('/api/security/firewall');
       
       if (siteRes.ok && fwRes.ok) {
-        const siteData = await siteRes.json();
-        const fwData = await fwRes.json();
-        setWebsites(siteData);
-        setRules(fwData.rules || []);
-        if (siteData.length > 0) {
-          setSslDomain(siteData[0].domain);
-        }
+         const siteData = await siteRes.json();
+         const fwData = await fwRes.json();
+         setWebsites(siteData);
+         setRules(fwData.rules || []);
+         if (siteData.length > 0) {
+           setSslDomain(siteData[0].domain);
+         }
       } else {
         throw new Error('API failed');
       }
@@ -65,8 +63,6 @@ export default function Security() {
       if (websites.length > 0) {
         setSslDomain(websites[0].domain);
       }
-    } finally {
-      setLoading(false);
     }
   };
 
