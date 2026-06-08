@@ -131,12 +131,25 @@ else
     ADMIN_PASS="admin123 (Fallback)"
 fi
 
+# Configure MariaDB root password to be the same as the panel admin password
+echo "Securing MariaDB with the same password..."
+mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('$ADMIN_PASS'); FLUSH PRIVILEGES;" || true
+
+# Write /root/.my.cnf so commands run without prompting for the password
+cat > /root/.my.cnf <<EOF
+[client]
+user=root
+password=$ADMIN_PASS
+EOF
+chmod 600 /root/.my.cnf
+
 echo ""
 echo "=================================================="
 echo " WebHostPanel Installation Successful!"
 echo "=================================================="
-echo " Panel Access URL: http://$IP_ADDR:8080"
-echo " Username:         $ADMIN_USER"
-echo " Password:         $ADMIN_PASS"
+echo " Panel Access URL:  http://$IP_ADDR:8080"
+echo " Username:          $ADMIN_USER"
+echo " Panel Password:    $ADMIN_PASS"
+echo " MariaDB root Pass: $ADMIN_PASS (Same password)"
 echo "=================================================="
 echo ""
